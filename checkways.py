@@ -6,8 +6,33 @@ def inputMaze(filename) :
     baris = len(arr)
     kolom = len(arr[0])
 
+    startb = -1
+    startk = -1
+    finishb = -1
+    finishk = -1
+
+    # Melakukan pencarian titik mulai dan akhir (case : kiri dan kanan)
+    for i in range(baris) :
+        if (arr[i][0] == 0) :
+            startb = i
+            startk = 0
+
+        if (arr[i][kolom-1] == 0) :
+             finishb = i
+             finishk = kolom-1
+
+    # Melakukan pencarian titik mulai dan akhir (case : atas dan bawah)
+    for i in range(kolom) :
+        if (arr[0][i] == 0) :
+            startb = 0
+            startk = i
+        
+        if (arr[baris-1][i] == 0) :
+            finishb = baris-1
+            finishk = i
+
     f.close()
-    return arr,baris,kolom
+    return arr,startb,startk,finishb,finishk
 
 def printMaze(m) :
     for i in m :
@@ -50,15 +75,14 @@ def BFS(maze,x,y) :
 
 if __name__ == "__main__":
     file = input("Masukkan nama file : ")
-    maze, baris , kolom = inputMaze(file)
+    maze, start_baris , start_kolom, finish_baris , finish_kolom = inputMaze(file)
 
-    # Finish ada pada angka 2
-    for i in maze :
-        print(i)
-    print()
+    # Memberikan finish angka 2 sehingga lebih mudah dicari
+    maze[finish_baris][finish_kolom] = 2
+    
     printMaze(maze)
     print()
-    if (BFS(maze,0,1)) :
+    if (BFS(maze,start_baris,start_kolom)) :
         printSolution(maze)
     else :
         print("NOT FOUND")
