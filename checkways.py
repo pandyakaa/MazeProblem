@@ -1,28 +1,27 @@
-def isVisited(m,x,y) :
-    if (m[x][y] == 1) :
-        return True
-    else :
-        return False
-
-def initMatriksVisited(m,size_x, size_y) :
-    for i in range(size_x) :
-        for j in range(size_y) :
-            m[i][j] = 0
-
-def isBuntu(x,y,m,mvisit) :
-    if (m[x][y+1] == 1 and m[x][y]) :
-        return True 
-
-def BFS(start_x , start_y, finish_x, finish_y, arrvisited, arrhasil, m) :
-    return 0
-    
-if __name__ == "__main__":
+def inputMaze(filename) :
     arr = []
-    f = open("matriks.txt","r")
+    f = open("{}.txt".format(filename),"r")
     for line in f :
         arr.append([int(c) for c in line.strip()])
-    
-    
+    panjang = len(arr[0])
+    lebar = len(arr)
+
+    f.close()
+    return arr,panjang,lebar
+
+def printMaze(m) :
+    for i in m :
+        for j in i :
+            if ( j == 1 ) :
+                print("# ", end ='')
+            else :
+                print("  ",end = '')
+        print()
+
+if __name__ == "__main__":
+    file = input("Masukkan nama file : ")
+    maze, size_x , size_y = inputMaze(file)
+    printMaze(maze)
     
 
     
