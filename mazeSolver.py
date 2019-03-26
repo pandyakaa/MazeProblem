@@ -68,7 +68,7 @@ def BFS(maze,x,y,de) :
     de.append(Point(x,y))
 
     while ( not(len(de) == 0) ) :
-        p = de.pop()
+        p = de.popleft()
 
         if (maze[p.x][p.y] == 2) :
             return True
@@ -111,11 +111,10 @@ if __name__ == "__main__":
     # Memberikan finish angka 2 sehingga lebih mudah dicari
     maze[finish_baris][finish_kolom] = 2
 
-    de = ([])
+    de = deque([])
     printMaze(maze)
     print()
     if (BFS(maze,start_baris,start_kolom,de)) :
-        for i in maze :
-            print(i)
+        printSolution(maze)
     else :
         print("NOT FOUND") 
