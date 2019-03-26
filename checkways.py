@@ -15,7 +15,7 @@ def printMaze(m) :
             if ( j == 1 ) :
                 print("# ", end ='')
             else :
-                print("  ",end = '')
+                print("  ", end = '')
         print()
 
 def printSolution(m) :
@@ -28,12 +28,12 @@ def printSolution(m) :
         print()
 
 def isSafe(m,x,y) :
-    if ( x >= 0 and x < len(m[0]) and ( y >= 0 and y < len(m)) and m[x][y] == 0 ) :
+    if ( x >= 0 and x < len(m[0]) and y >= 0 and y < len(m) and m[x][y] == 0 ) :
         return True
     else :
         return False
 
-def solveUtil(m,x,y,sol) :
+def BFSUtil(m,x,y,sol) :
     if ( x == len(m[0]) - 1 and y == len(m) - 1 ) :
         sol[x][y] = 0
         return True
@@ -41,20 +41,20 @@ def solveUtil(m,x,y,sol) :
     if isSafe(m,x,y) == True :
         sol[x][y] = 0
 
-        if solveUtil(m,x+1,y,sol) == True :
+        if BFSUtil(m,x+1,y,sol) == True :
             return True
         
-        if solveUtil(m,x,y+1,sol) == True :
+        if BFSUtil(m,x,y+1,sol) == True :
             return True
         
         sol[x][y] = 1
         return False
 
-def solveMaze(m) :
+def BFS(m,x,y) :
 
     sol = [ [ 1 for j in range(len(m[0])) ] for i in range(len(m)) ] 
       
-    if solveUtil(m, 0, 0, sol) == False: 
+    if BFSUtil(m, x, y, sol) == False: 
         print("Solution doesn't exist"); 
         return False
       
@@ -64,12 +64,12 @@ def solveMaze(m) :
 if __name__ == "__main__":
     file = input("Masukkan nama file : ")
     maze, size_x , size_y = inputMaze(file)
-
+    
     printMaze(maze)
     print()
     printSolution(maze)
     print()
-    solveMaze(maze)
+    BFS(maze,0,1)
     
 
     
