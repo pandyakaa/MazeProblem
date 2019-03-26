@@ -1,3 +1,7 @@
+import sys
+from collections import deque
+from point import Point
+
 def inputMaze(filename) :
     arr = []
     f = open("{}.txt".format(filename),"r")
@@ -54,26 +58,50 @@ def printSolution(m) :
                 print("  ", end = '')
         print()
 
-# Solusi menggunakan Algoritma BFS
-def BFS(maze,x,y) :
-    if (maze[x][y] == 2) :
+def isFeasible(m,x,y) :
+    if ( (m[x][y]==0 or m[x][y]==2) ) :
         return True
-    elif (maze[x][y] == 0 ) :
-        maze[x][y] = 3
-        if ( y < len(maze[x])-1 ) :
-            if BFS(maze,x,y+1) :
-                return True
-        if(x < len(maze) -1 ) :
-            if BFS(maze,x+1,y) :
-                return True
-        if(x > 0) :
-            if BFS(maze,x-1,y) :
-                return True
-        if ( y > 0) :
-            if BFS(maze,x,y-1) :
-                return True
+    
+    return False
 
-    #maze[x][y] = 4
+def BFS(maze,x,y,de) :
+    de.append(Point(x,y))
+
+    while ( not(len(de) == 0) ) :
+        p = de.pop()
+
+        if (maze[p.x][p.y] == 2) :
+            return True
+        
+        if(isFeasible(maze,p.x-1,p.y)) :
+            maze[p.x][p.y] = 3
+            nextP = Point(p.x-1,p.y) 
+            de.append(nextP)
+        elif (maze[p.x][p.y] == 0) :
+            maze[p.x][p.y] = 3
+
+        if (isFeasible(maze,p.x+1,p.y)) :
+            maze[p.x][p.y] = 3
+            nextP = Point(p.x+1,p.y)
+            de.append(nextP)
+        elif (maze[p.x][p.y] == 0) :
+            maze[p.x][p.y] = 3
+        
+        if(isFeasible(maze,p.x,p.y+1)) :
+            maze[p.x][p.y] = 3
+            nextP = Point(p.x,p.y+1) 
+            de.append(nextP) 
+        elif (maze[p.x][p.y+1] == 0) :
+            maze[p.x][p.y] = 3
+
+        if(isFeasible(maze,p.x,p.y-1)) :
+            maze[p.x][p.y] = 3
+            nextP = Point(p.x,p.y-1) 
+            de.append(nextP) 
+        elif (maze[p.x][p.y-1] == 0) :
+            maze[p.x][p.y] = 3
+    
+    return False
 
 
 if __name__ == "__main__":
@@ -83,9 +111,11 @@ if __name__ == "__main__":
     # Memberikan finish angka 2 sehingga lebih mudah dicari
     maze[finish_baris][finish_kolom] = 2
 
+    de = ([])
     printMaze(maze)
     print()
-    if (BFS(maze,start_baris,start_kolom)) :
-        printSolution(maze)
+    if (BFS(maze,start_baris,start_kolom,de)) :
+        for i in maze :
+            print(i)
     else :
-        print("NOT FOUND")
+        print("NOT FOUND") 
