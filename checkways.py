@@ -62,12 +62,3 @@ if __name__ == "__main__":
         printSolution(maze)
     else :
         print("NOT FOUND")
-    
-    
-
-    
-
-    
-
-        
-        
