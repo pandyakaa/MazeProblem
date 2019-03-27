@@ -174,5 +174,3 @@ if __name__ == "__main__":
         printSolution(maze2)
     else :
         print("NOT FOUND")
-    
-
