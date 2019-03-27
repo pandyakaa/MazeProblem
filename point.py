@@ -15,5 +15,8 @@ class Point :
     
     def getParent(self) :
         return self.parent
+    
+    def isEqual(self, other):
+        return (self.x == other.x and self.y == other.y)
         
         
