@@ -62,18 +62,18 @@ def printSolution(m) :
         print()
 
 def isFeasible(m,x,y) :
-    if ( (m[x][y]==0 or m[x][y]==2)  and x >= 0 and x < len(m) and y >= 0 and y < len(m[0]) ) :
+    if ( m[x][y]==0 and x >= 0 and x < len(m) and y >= 0 and y < len(m[0]) ) :
         return True
     
     return False
 
-def BFS(maze,x,y,de) :
+def BFS(maze,x,y,de,fp) :
     de.append(Point(x,y,None))
 
     while ( not(len(de) == 0) ) :
         p = de.popleft()
 
-        if (maze[p.x][p.y] == 2) :
+        if (p.isEqual(fp)) :
             return p
         
         if(isFeasible(maze,p.x-1,p.y)) :
@@ -146,14 +146,11 @@ if __name__ == "__main__":
     file = input("Masukkan nama file : ")
     maze, start_baris , start_kolom, finish_baris , finish_kolom = inputMaze(file)
     maze2, start_baris , start_kolom, finish_baris , finish_kolom = inputMaze(file)
-
-    # Memberikan finish angka 2 sehingga lebih mudah dicari
-    maze[finish_baris][finish_kolom] = 2
     
     fp = Point(finish_baris,finish_kolom,None)
     de = deque()
 
-    p = BFS(maze,start_baris,start_kolom,de)
+    p = BFS(maze,start_baris,start_kolom,de,fp)
     q = AStar(maze2,start_baris,start_kolom,fp)
 
     if ( p != None ) :
