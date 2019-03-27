@@ -1,4 +1,5 @@
 # Kelas Point
+# digunakan sebagai representasi koordinat tiap elemen yang ada pada matriks
 
 class Point :
     def __init__(self,x,y,parent):

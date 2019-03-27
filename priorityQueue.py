@@ -1,6 +1,9 @@
 # A simple implementation of Priority Queue 
 # using Queue. 
-# SOURCE : https://www.geeksforgeeks.org/priority-queue-in-python/
+
+# Digunakan untuk memudahkan pada saat melakukan algoritma A*
+# SOURCE : https://www.geeksforgeeks.org/priority-queue-in-python/, accessed on Wednesday, 27/03/2019 21.43 
+
 class PriorityQueue(object): 
     def __init__(self): 
         self.queue = [] 
@@ -19,12 +22,12 @@ class PriorityQueue(object):
     # for popping an element based on Priority 
     def delete(self): 
         try: 
-            max = 0
+            min = 0
             for i in range(len(self.queue)): 
-                if self.queue[i].f < self.queue[max].f: 
-                    max = i 
-            item = self.queue[max] 
-            del self.queue[max] 
+                if self.queue[i].f < self.queue[min].f: 
+                    min = i 
+            item = self.queue[min] 
+            del self.queue[min] 
             return item 
         except IndexError: 
             print() 
