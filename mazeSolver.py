@@ -54,6 +54,8 @@ def printSolution(m) :
                 print("# ",end = '')
             elif (j == 3 or j == 2) :
                 print(" ",end = '')
+            elif ( j == 4 ) :
+                print("X ", end = '')
             else :
                 print("  ", end = '')
         print()
@@ -65,56 +67,77 @@ def isFeasible(m,x,y) :
     return False
 
 def BFS(maze,x,y,de) :
-    de.append(Point(x,y))
+    de.append(Point(x,y,None))
 
     while ( not(len(de) == 0) ) :
         p = de.popleft()
 
         if (maze[p.x][p.y] == 2) :
-            return True
+            return p
         
         if(isFeasible(maze,p.x-1,p.y)) :
             maze[p.x][p.y] = 3
-            nextP = Point(p.x-1,p.y) 
+            nextP = Point(p.x-1,p.y,p) 
             de.append(nextP)
         elif (maze[p.x][p.y] == 0) :
             maze[p.x][p.y] = 3
 
         if (isFeasible(maze,p.x+1,p.y)) :
             maze[p.x][p.y] = 3
-            nextP = Point(p.x+1,p.y)
+            nextP = Point(p.x+1,p.y,p)
             de.append(nextP)
         elif (maze[p.x][p.y] == 0) :
             maze[p.x][p.y] = 3
         
         if(isFeasible(maze,p.x,p.y+1)) :
             maze[p.x][p.y] = 3
-            nextP = Point(p.x,p.y+1) 
+            nextP = Point(p.x,p.y+1,p) 
             de.append(nextP) 
         elif (maze[p.x][p.y+1] == 0) :
             maze[p.x][p.y] = 3
 
         if(isFeasible(maze,p.x,p.y-1)) :
             maze[p.x][p.y] = 3
-            nextP = Point(p.x,p.y-1) 
+            nextP = Point(p.x,p.y-1,p) 
             de.append(nextP) 
         elif (maze[p.x][p.y-1] == 0) :
             maze[p.x][p.y] = 3
-    
-    return False
 
+def heuristic(point_start,point_finish) :
+    return (abs(point_start.x - point_finish.x) + abs(point_start.y - point_finish.y))
 
+def AStar(maze,x1,y1,x2,y2) :
+    startPoint = Point(x1,y1,None)
+    startPoint.f = startPoint.g = startPoint.h = 0
+    finishPoint = Point(x2,y2,None)
+    finishPoint.f = finishPoint.g = finishPoint.h = 0
+
+    openList = []
+    closedList = []
+
+    openList.append(startPoint)
+    while ( len(openList) != 0 ) :
+        currentNode = openList[0]
+        currentIndex = 0
+
+        
 if __name__ == "__main__":
     file = input("Masukkan nama file : ")
     maze, start_baris , start_kolom, finish_baris , finish_kolom = inputMaze(file)
 
     # Memberikan finish angka 2 sehingga lebih mudah dicari
     maze[finish_baris][finish_kolom] = 2
+    
+    de = deque()
+    p = None
+    p = BFS(maze,start_baris,start_kolom,de)
 
-    de = deque([])
-    printMaze(maze)
-    print()
-    if (BFS(maze,start_baris,start_kolom,de)) :
+    if ( p != None ) :
+        maze[start_baris][start_kolom] = 4
+        while (p.getParent() != None ) :
+            maze[p.x][p.y] = 4
+            p = p.getParent()
+
         printSolution(maze)
     else :
-        print("NOT FOUND") 
+        print("NOT FOUND")
