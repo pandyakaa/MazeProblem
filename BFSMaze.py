@@ -4,6 +4,7 @@ from point import Point
 from colorama import Fore, Back, Style
 from priorityQueue import PriorityQueue
 import turtle
+import time
 
 #color definition
 tileColor = "white"
@@ -79,9 +80,11 @@ class Tile(turtle.Turtle):
     def __init__(self):
         turtle.Turtle.__init__(self)
         self.shape("square")
+        self.shapesize(0.5)
         self.color(tileColor)
         self.penup()
         self.speed(0)
+
 
 #Wall block class
 class Wall(turtle.Turtle):
@@ -89,6 +92,7 @@ class Wall(turtle.Turtle):
         turtle.Turtle.__init__(self)
         self.shape("square")
         self.color(wallColor)
+        self.shapesize(0.5)
         self.penup()
         self.speed(0)
 
@@ -97,6 +101,7 @@ class Goal(turtle.Turtle):
     def __init__(self):
         turtle.Turtle.__init__(self)
         self.shape("square")
+        self.shapesize(0.5)
         #loses square in initialization
         self.color("white")
         self.penup()
@@ -107,6 +112,7 @@ class Sol(turtle.Turtle):
     def __init__(self):
         turtle.Turtle.__init__(self)
         self.shape("square")
+        self.shapesize(0.5)
         #loses square in initialization
         self.color("white")
         self.penup()
@@ -117,6 +123,7 @@ class Bfs(turtle.Turtle):
     def __init__(self):
         turtle.Turtle.__init__(self)
         self.shape("square")
+        self.shapesize(0.5)
         #loses square in initialization
         self.color("white")
         self.penup()
@@ -126,8 +133,8 @@ class Bfs(turtle.Turtle):
 def drawMaze(array):
     for y in range(len(array)):
         for x in range(len(array[y])):
-            i = -288 + (x * 24)
-            j = 288 - (y * 24)
+            i = -288 + (x * 12)
+            j = 288 - (y * 12)
 
             if array[y][x] == 0:
                 Tile.goto(i,j)
@@ -140,7 +147,7 @@ def drawMaze(array):
                 goal.color(goalColor)
 
 
-    return (-288 + (len(array[0]) * 24), 288 - (len(array) * 24))
+    return (-288 + (len(array[0]) * 12), 288 - (len(array) * 12))
 
 
 #check for walls
@@ -158,8 +165,8 @@ def BFS(maze,x,y,fp) :
     while ( not(len(de) == 0) ) :
         p = de.popleft()
 
-        i = -288 + (p.y * 24)
-        j = 288 - (p.x * 24)
+        i = -288 + (p.y * 12)
+        j = 288 - (p.x * 12)
 
         maze[p.x][p.y] = 3
         if (p.isEqual(fp)) :
@@ -203,8 +210,8 @@ def AStar(maze,x,y,fpoint) :
 
         current_node = openList.delete()
         maze[current_node.x][current_node.y] = 3
-        i = -288 + (current_node.y * 24)
-        j = 288 - (current_node.x * 24)
+        i = -288 + (current_node.y * 12)
+        j = 288 - (current_node.x * 12)
         #color BFS
         Bfs.goto(i,j)
         Bfs.color(bfsColor)
@@ -258,8 +265,8 @@ if __name__ == "__main__":
         while (p.getParent() != None ) :
             maze[p.x][p.y] = 4
 
-            i = -288 + (p.y * 24)
-            j = 288 - (p.x * 24)
+            i = -288 + (p.y * 12)
+            j = 288 - (p.x * 12)
             Sol.goto(i,j)
             Sol.color(solColor)
             Sol.stamp()
@@ -267,11 +274,12 @@ if __name__ == "__main__":
             p = p.getParent()
 
         maze[startrow][startcolumn] = 4
-        i = -288 + (startcolumn * 24)
-        j = 288 - (startrow * 24)
+        i = -288 + (startcolumn * 12)
+        j = 288 - (startrow * 12)
         Sol.goto(i,j)
         Sol.color(solColor)
         Sol.stamp()
+
 
         #Draw Maze
         drawMaze(maze2)
@@ -281,8 +289,8 @@ if __name__ == "__main__":
         while (q.getParent() != None ) :
             maze[q.x][q.y] = 4
 
-            i = -288 + (q.y * 24)
-            j = 288 - (q.x * 24)
+            i = -288 + (q.y * 12)
+            j = 288 - (q.x * 12)
             Sol.goto(i,j)
             Sol.color(solColor)
             Sol.stamp()
@@ -290,8 +298,8 @@ if __name__ == "__main__":
             q = q.getParent()
 
         maze2[startrow][startcolumn] = 4
-        i = -288 + (startcolumn * 24)
-        j = 288 - (startrow * 24)
+        i = -288 + (startcolumn * 12)
+        j = 288 - (startrow * 12)
         Sol.goto(i,j)
         Sol.color(solColor)
         Sol.stamp()
