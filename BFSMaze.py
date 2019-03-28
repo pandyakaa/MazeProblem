@@ -2,8 +2,11 @@ import sys
 from collections import deque
 from point import Point
 from colorama import Fore, Back, Style
+from priorityQueue import PriorityQueue
 import turtle
 
+#color definition
+tileColor = "white"
 wallColor = "black"
 goalColor = "green"
 bfsColor = "blue"
@@ -26,34 +29,59 @@ def inputMaze(filename) :
     baris = len(arr)
     kolom = len(arr[0])
 
-    startb = -1
-    startk = -1
-    finishb = -1
-    finishk = -1
+    startr = -1
+    startc = -1
+    finishr = -1
+    finishc = -1
 
     # Melakukan pencarian titik mulai dan akhir (case : kiri dan kanan)
     for i in range(baris) :
         if (arr[i][0] == 0) :
-            startb = i
-            startk = 0
+            startr = i
+            startc = 0
 
         if (arr[i][kolom-1] == 0) :
-             finishb = i
-             finishk = kolom-1
+             finishr = i
+             finishc = kolom-1
 
     # Melakukan pencarian titik mulai dan akhir (case : atas dan bawah)
     for i in range(kolom) :
         if (arr[0][i] == 0) :
-            startb = 0
-            startk = i
+            startr = 0
+            startc = i
 
         if (arr[baris-1][i] == 0) :
-            finishb = baris-1
-            finishk = i
+            finishr = baris-1
+            finishc = i
+
+    # Melakukan validasi apakah matriks bisa dimainkan atau tidak
+    if ( startr != -1 and startc != -1 and finishr != -1 and finishc != -1 ) :
+        valid = True
+    else :
+        valid = False
 
     f.close()
-    return arr,startb,startk,finishb,finishk
+    return arr,startr,startc,finishr,finishc, valid
 
+#deep copy for maze
+def copy(m1) :
+    m2 = []
+    for i in range(len(m1)) :
+        temp = []
+        for j in range(len(m1[0])) :
+            temp.append(m1[i][j])
+        m2.append(temp)
+
+    return m2
+
+#Tile block class
+class Tile(turtle.Turtle):
+    def __init__(self):
+        turtle.Turtle.__init__(self)
+        self.shape("square")
+        self.color(tileColor)
+        self.penup()
+        self.speed(0)
 
 #Wall block class
 class Wall(turtle.Turtle):
@@ -62,7 +90,7 @@ class Wall(turtle.Turtle):
         self.shape("square")
         self.color(wallColor)
         self.penup()
-        self.speed(-1)
+        self.speed(0)
 
 #goal block class
 class Goal(turtle.Turtle):
@@ -72,7 +100,7 @@ class Goal(turtle.Turtle):
         #loses square in initialization
         self.color("white")
         self.penup()
-        self.speed(-1)
+        self.speed(0)
 
 #Solution block class
 class Sol(turtle.Turtle):
@@ -82,7 +110,7 @@ class Sol(turtle.Turtle):
         #loses square in initialization
         self.color("white")
         self.penup()
-        self.speed(-1)
+        self.speed(0)
 
 #BFS block class
 class Bfs(turtle.Turtle):
@@ -92,7 +120,7 @@ class Bfs(turtle.Turtle):
         #loses square in initialization
         self.color("white")
         self.penup()
-        self.speed(-1)
+        self.speed(0)
 
 #draw maze 1 as walls
 def drawMaze(array):
@@ -101,6 +129,9 @@ def drawMaze(array):
             i = -288 + (x * 24)
             j = 288 - (y * 24)
 
+            if array[y][x] == 0:
+                Tile.goto(i,j)
+                Tile.stamp()
             if array[y][x] == 1:
                 Wall.goto(i, j)
                 Wall.stamp()
@@ -120,68 +151,110 @@ def isFeasible(m,x,y) :
     return False
 
 #Breadth first search
-def BFS(maze,x,y,de) :
+def BFS(maze,x,y,fp) :
+    de = deque()
     de.append(Point(x,y,None))
 
     while ( not(len(de) == 0) ) :
         p = de.popleft()
+
         i = -288 + (p.y * 24)
         j = 288 - (p.x * 24)
 
-        if (maze[p.x][p.y] == 2) :
+        maze[p.x][p.y] = 3
+        if (p.isEqual(fp)) :
             return p
 
         if(isFeasible(maze,p.x-1,p.y)) :
-            maze[p.x][p.y] = 3
             nextP = Point(p.x-1,p.y,p)
             de.append(nextP)
-        elif (maze[p.x][p.y] == 0) :
-            maze[p.x][p.y] = 3
 
         if (isFeasible(maze,p.x+1,p.y)) :
-            maze[p.x][p.y] = 3
             nextP = Point(p.x+1,p.y,p)
             de.append(nextP)
-        elif (maze[p.x][p.y] == 0) :
-            maze[p.x][p.y] = 3
 
         if(isFeasible(maze,p.x,p.y+1)) :
-            maze[p.x][p.y] = 3
             nextP = Point(p.x,p.y+1,p)
             de.append(nextP)
-        elif (maze[p.x][p.y+1] == 0) :
-            maze[p.x][p.y] = 3
 
         if(isFeasible(maze,p.x,p.y-1)) :
-            maze[p.x][p.y] = 3
             nextP = Point(p.x,p.y-1,p)
             de.append(nextP)
-        elif (maze[p.x][p.y-1] == 0) :
-            maze[p.x][p.y] = 3
+
+        #color BFS
         Bfs.goto(i,j)
         Bfs.color(bfsColor)
         Bfs.stamp()
 
+#Manhattan distance
+def manhattanDist(point_start,point_finish) :
+    return (abs(point_start.x - point_finish.x) + abs(point_start.y - point_finish.y))
+
+#A*
+def AStar(maze,x,y,fpoint) :
+    startPoint = Point(x,y,None)
+    startPoint.f = startPoint.g = startPoint.h = 0
+
+    openList = PriorityQueue()
+
+    openList.insert(startPoint)
+
+    while ( not(openList.isEmpty()) ) :
+
+        current_node = openList.delete()
+        maze[current_node.x][current_node.y] = 3
+        i = -288 + (current_node.y * 24)
+        j = 288 - (current_node.x * 24)
+        #color BFS
+        Bfs.goto(i,j)
+        Bfs.color(bfsColor)
+        Bfs.stamp()
+
+
+        if (current_node.isEqual(fpoint) ) :
+            return current_node
+
+        children = []
+        for pos in [(0, -1), (0, 1), (-1, 0), (1, 0)]:
+            curr_x = current_node.x + pos[0]
+            curr_y = current_node.y + pos[1]
+
+            if (not(isFeasible(maze,curr_x,curr_y))) :
+                continue
+
+            child = Point(curr_x,curr_y,current_node)
+            children.append(child)
+
+        for child in children :
+            child.g = current_node.g + 1
+            child.h = manhattanDist(child,fpoint)
+            child.f = child.g + child.h
+
+            openList.insert(child)
+
 #main
 if __name__ == "__main__":
     file = input("Masukkan nama file : ")
-    maze, startrow, startcolumn, finishrow, finishcolumn = inputMaze(file)
-    maze[finishrow][finishcolumn] = 2
+    maze, startrow, startcolumn, finishrow, finishcolumn, valid = inputMaze(file)
+    maze2 = copy(maze)
 
+    fp = Point(finishrow, finishcolumn, None)
+
+    #Turtle object initialization
+    Tile = Tile()
     Wall = Wall()
     goal = Goal()
     Sol = Sol()
     Bfs = Bfs()
-    drawMaze(maze)
 
-    de = deque()
-    p  =None
-    p = BFS(maze, startrow, startcolumn, de)
-
-    if (p != None) :
+    if (valid) :
         print("Found")
+        #Draw Maze
+        drawMaze(maze)
 
-
+        #BFS execution
+        p = BFS(maze, startrow, startcolumn,fp)
+        #draw Solution
         while (p.getParent() != None ) :
             maze[p.x][p.y] = 4
 
@@ -194,6 +267,29 @@ if __name__ == "__main__":
             p = p.getParent()
 
         maze[startrow][startcolumn] = 4
+        i = -288 + (startcolumn * 24)
+        j = 288 - (startrow * 24)
+        Sol.goto(i,j)
+        Sol.color(solColor)
+        Sol.stamp()
+
+        #Draw Maze
+        drawMaze(maze2)
+        #A* execution
+        q = AStar(maze2,startrow,startcolumn,fp)
+        #draw Solution
+        while (q.getParent() != None ) :
+            maze[q.x][q.y] = 4
+
+            i = -288 + (q.y * 24)
+            j = 288 - (q.x * 24)
+            Sol.goto(i,j)
+            Sol.color(solColor)
+            Sol.stamp()
+
+            q = q.getParent()
+
+        maze2[startrow][startcolumn] = 4
         i = -288 + (startcolumn * 24)
         j = 288 - (startrow * 24)
         Sol.goto(i,j)
