@@ -20,8 +20,10 @@ wn.title("Maze Solver")
 wn.setup()
 wn.screensize(2000, 2000)
 
-
-#input maze
+# Fungsi inputMaze, dengan parameter sebuah file
+# digunakan untuk memasukkan matriks sebagai representasi dari maze
+# dari file eksternal dengan nama filename
+# Sekaligus mencari titik awal masuk dan keluar, disimpan dalam startb, startk, finishb dan finishk
 def inputMaze(filename) :
     arr = []
     f = open("{}.txt".format(filename),"r")
@@ -64,7 +66,9 @@ def inputMaze(filename) :
     f.close()
     return arr,startr,startc,finishr,finishc, valid
 
-#deep copy for maze
+# Fungsi copy, dengan parameter sebuah matriks m1
+# digunakan untuk melakukan DEEP COPY pada sebuah matriks
+# sehingga tidak perlu membaca dari file eksternal lagi
 def copy(m1) :
     m2 = []
     for i in range(len(m1)) :
@@ -150,14 +154,19 @@ def drawMaze(array):
     return (-288 + (len(array[0]) * 12), 288 - (len(array) * 12))
 
 
-#check for walls
+# Fungsi isFeasible, dengan parameter sebuah matriks m, int x dan int y
+# digunakan untuk melakukan validasi, apakah koordinat (x,y) valid atau tidak
+# DEFINISI VALID : Lebih atau sama dengan 0 , dan kurang dari panjang atau kolom matriks
 def isFeasible(m,x,y) :
     if ( (m[x][y]==0 or m[x][y]==2) ) :
         return True
 
     return False
 
-#Breadth first search
+# Fungsi BFS, dengan parameter maze maze, int x, int y, dan point fp
+# merupakan salah satu dari dua fungsi utama dalam program ini
+# Memanfaatkan sebuah type data DEQUE, dan melakukan proses Breadth-First Searching
+# Jika memiliki solusi, akan me-return sebuah point p
 def BFS(maze,x,y,fp) :
     de = deque()
     de.append(Point(x,y,None))
@@ -193,11 +202,19 @@ def BFS(maze,x,y,fp) :
         Bfs.color(bfsColor)
         Bfs.stamp()
 
-#Manhattan distance
+# Fungsi manhattanDist, dengan parameter point point_start dan point point_finish
+# digunakan untuk mencari nilai h(n) pada algoritma A*
+# Menggunakan manhattan distance karena hanya bisa bergerak ke empat arah
 def manhattanDist(point_start,point_finish) :
     return (abs(point_start.x - point_finish.x) + abs(point_start.y - point_finish.y))
 
-#A*
+# Fungsi AStar, dengan parameter maze maze, int x, int y, dan point fpoint
+# merupakan salah satu dari dua fungsi utama dalam program ini
+# Memanfaatkan type data Priority Queue, yang telah dibuat kelas sendiri sebelumnya
+# Akan melakukan pencarian dengan algoritma AStar dengan :
+# f(n) = g(n) + h(n)
+# dengan g(n) adalah jarak sebenarnya sebuah titik ke titik akhir
+# dan h(n) adalah jarak heuristik dari sebuah titik ke titik akhir dengan memanfaatkan manhattanDist
 def AStar(maze,x,y,fpoint) :
     startPoint = Point(x,y,None)
     startPoint.f = startPoint.g = startPoint.h = 0
@@ -239,12 +256,16 @@ def AStar(maze,x,y,fpoint) :
 
             openList.insert(child)
 
-#main
+# Fungsi main, akan dipanggil saat program ini dijalankan
 if __name__ == "__main__":
+
+    # Melakukan input nama file dari pengguna, dan memanggil fungsi inputMaze untuk
+    # memasukkannya ke dalam maze
     file = input("Masukkan nama file : ")
     maze, startrow, startcolumn, finishrow, finishcolumn, valid = inputMaze(file)
     maze2 = copy(maze)
 
+    # Util yang diperlukan oleh fungsi-fungsi searching
     fp = Point(finishrow, finishcolumn, None)
 
     #Turtle object initialization
